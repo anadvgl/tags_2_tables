@@ -19,7 +19,7 @@ mysqluser = os.getenv('mysqluser')
 mysqlpwd = os.getenv('mysqlpwd')
 
 # connect to mysql
-mysql_conn_str = f"mysql+pymysql://{mysqluser}:{mysqlpwd}@k8s-dev-10.dmp.vimpelcom.ru:32646/openmetadata_db"
+mysql_conn_str = f"mysql+pymysql://{mysqluser}:{mysqlpwd}@host:port/db"
 mysql_engine = create_engine(mysql_conn_str)
 mysql_engine.execute("SET FOREIGN_KEY_CHECKS=0")
 mysql_engine.connect()
@@ -85,11 +85,11 @@ userpwd = os.getenv("client_secret")
 def get_token(userpwd) -> str:
     data = {
         "grant_type": "client_credentials",
-        "client_id": "open-metadata",
+        "client_id": "***",
         "client_secret": userpwd,
     }
     response = httpx.post(
-        "https://keycloak.prod.dmp.vimpelcom.ru/auth/realms/dmp-core-services/protocol/openid-connect/token",
+        "https://keycloak***/auth/realms/***/protocol/***-connect/token",
         data=data,
         verify=False,
         timeout=httpx.Timeout(300),
@@ -108,7 +108,7 @@ else:
     for fqn in tables_need_id['tableFQN']:
         token = get_token(userpwd)
         response = requests.get(
-            f"https://open-metadata.prod.dmp.vimpelcom.ru/api/v1/tables/name/{fqn}",
+            f"https://open-metadata.***/api/v1/tables/name/{fqn}",
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
             data={},
             verify=False,
@@ -136,14 +136,14 @@ else:
             req.append("""{"op":"add", "path":""" + f'"/tags/{index}"'",""" + " """""value": {"tagFQN":""" + f'"{tag}' + """"}}""")
         res_req = str(req).replace("'","")
         response = requests.patch(
-                    f"https://open-metadata.prod.dmp.vimpelcom.ru/api/v1/tables/{tid}",
+                    f"https://open-metadata.***/api/v1/tables/{tid}",
                     headers={"Content-Type": "application/json-patch+json", "Authorization": f"Bearer {token}"},
                     data=(res_req).encode('utf-8'),
                     verify=False,) 
         if response.status_code == 401:
             token = get_token(userpwd)
             response = requests.patch(
-                        f"https://open-metadata.prod.dmp.vimpelcom.ru/api/v1/tables/{tid}",
+                        f"https://open-metadata.***/api/v1/tables/{tid}",
                         headers={"Content-Type": "application/json-patch+json", "Authorization": f"Bearer {token}"},
                         data=(res_req).encode('utf-8'),
                         verify=False,)  
