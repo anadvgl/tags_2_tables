@@ -1,0 +1,71 @@
+metadata:
+  name: tags-to-tables
+  namespace: datagovernance
+  uid: 6031ea00-330a-49c4-885b-dd0d2a4b9d46
+  resourceVersion: '3105955599'
+  generation: 7
+  creationTimestamp: '2023-04-19T12:35:13Z'
+  labels:
+    workflows.argoproj.io/creator: e2cf39a0-cb2b-471d-b2d2-9055f874aa8d
+    workflows.argoproj.io/creator-email: anadovgal.at.spb.beeline.ru
+    workflows.argoproj.io/creator-preferred-username: anadovgal
+  managedFields:
+    - manager: argo
+      operation: Update
+      apiVersion: argoproj.io/v1alpha1
+      time: '2023-04-19T12:35:13Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:workflows.argoproj.io/creator: {}
+            f:workflows.argoproj.io/creator-email: {}
+            f:workflows.argoproj.io/creator-preferred-username: {}
+        f:spec: {}
+spec:
+  templates:
+    - name: main
+      inputs: {}
+      outputs: {}
+      metadata: {}
+      steps:
+        - - name: loader
+            template: job
+            arguments: {}
+    - name: job
+      inputs: {}
+      outputs: {}
+      metadata:
+        annotations:
+          vault.hashicorp.com/agent-inject: 'true'
+          vault.hashicorp.com/agent-inject-secret-mysqlconfig: >-
+            dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/tech_mysqlrep_to_pg
+          vault.hashicorp.com/agent-inject-secret-omdsecret: >-
+            dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/client_secret
+          vault.hashicorp.com/agent-inject-template-mysqlconfig: >
+            {{ with secret
+            "dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/tech_mysqlrep_to_pg"
+            -}}
+              export mysqlpwd="{{ .Data.data.password }}" 
+              export mysqluser="{{ .Data.data.user }}"
+            {{- end }}
+          vault.hashicorp.com/agent-inject-template-omdsecret: >
+            {{ with secret
+            "dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/client_secret"
+            -}}
+              export client_secret="{{ .Data.data.client_secret }}"
+            {{- end }}
+          vault.hashicorp.com/role: datagovernance-injector-role
+      container:
+        name: ''
+        image: nexus-repo.dmp.vimpelcom.ru/datagovernance/tags-to-tables:20
+        command:
+          - bash
+          - '-c'
+          - >-
+            source /vault/secrets/mysqlconfig && source /vault/secrets/omdsecret
+            && python tags-to-tables.py
+        resources: {}
+  entrypoint: main
+  arguments: {}
