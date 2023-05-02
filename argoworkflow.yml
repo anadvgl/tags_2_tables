@@ -1,6 +1,6 @@
 metadata:
   name: tags-to-tables
-  namespace: datagovernance
+  namespace: ***
   uid: 6031ea00-330a-49c4-885b-dd0d2a4b9d46
   resourceVersion: '3105955599'
   generation: 7
@@ -39,32 +39,32 @@ spec:
       metadata:
         annotations:
           vault.hashicorp.com/agent-inject: 'true'
-          vault.hashicorp.com/agent-inject-secret-mysqlconfig: >-
-            dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/tech_mysqlrep_to_pg
-          vault.hashicorp.com/agent-inject-secret-omdsecret: >-
-            dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/client_secret
-          vault.hashicorp.com/agent-inject-template-mysqlconfig: >
+          vault.hashicorp.com/agent-inject-secret-***: >-
+            dmp-apps-secrets/role-based-auths/vault/kubernetes/***/tech_***
+          vault.hashicorp.com/agent-inject-secret-***: >-
+            dmp-apps-secrets/role-based-auths/vault/kubernetes/***/***
+          vault.hashicorp.com/agent-inject-template-***: >
             {{ with secret
-            "dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/tech_mysqlrep_to_pg"
+            "dmp-apps-secrets/role-based-auths/vault/kubernetes/***/tech_***"
             -}}
               export mysqlpwd="{{ .Data.data.password }}" 
               export mysqluser="{{ .Data.data.user }}"
             {{- end }}
           vault.hashicorp.com/agent-inject-template-omdsecret: >
             {{ with secret
-            "dmp-apps-secrets/role-based-auths/vault/kubernetes/datagovernance/client_secret"
+            "dmp-apps-secrets/role-based-auths/vault/kubernetes/***/***"
             -}}
               export client_secret="{{ .Data.data.client_secret }}"
             {{- end }}
-          vault.hashicorp.com/role: datagovernance-injector-role
+          vault.hashicorp.com/role: ***-injector-role
       container:
         name: ''
-        image: nexus-repo.dmp.vimpelcom.ru/datagovernance/tags-to-tables:20
+        image: nexus-repo.***/***/tags-to-tables:20
         command:
           - bash
           - '-c'
           - >-
-            source /vault/secrets/mysqlconfig && source /vault/secrets/omdsecret
+            source /vault/secrets/*** && source /vault/secrets/***
             && python tags-to-tables.py
         resources: {}
   entrypoint: main
